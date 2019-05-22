@@ -49,8 +49,8 @@ class App extends Component {
     }
     this.defaultValues = null
     this.setMetadata.call(this)
-    this.isValidVotingKey = false
-    this.setIsValidVotingKey.call(this)
+    this.isValidVotingKey = true
+    // this.setIsValidVotingKey.call(this)
   }
   async setMetadata() {
     const currentData = await this.getMetadataContract().getValidatorData(this.getMiningKey())

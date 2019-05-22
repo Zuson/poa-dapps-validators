@@ -11,7 +11,8 @@ export default class KeysManager {
     this.instance = new web3.eth.Contract(KeysManagerAbi, KEYS_MANAGER_ADDRESS)
   }
   async isVotingActive(votingKey) {
-    return await this.instance.methods.isVotingActive(votingKey).call()
+    return true
+    // return await this.instance.methods.isVotingActive(votingKey).call()
   }
   async miningKeyByVoting(votingKey) {
     return await this.instance.methods.miningKeyByVoting(votingKey).call()

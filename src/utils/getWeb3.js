@@ -26,8 +26,8 @@ let getWeb3 = () => {
       let errorMsg = null
       let netIdName
       let netId
-      let injectedWeb3 = web3 !== null
-      let defaultAccount = null
+      // let injectedWeb3 = web3 !== null
+      // let defaultAccount = null
 
       if (web3) {
         netId = await web3.eth.net.getId()
@@ -44,9 +44,9 @@ let getWeb3 = () => {
           console.log(`This is ${netIdName}`)
         }
 
-        const accounts = await web3.eth.getAccounts()
+        // const accounts = await web3.eth.getAccounts()
 
-        defaultAccount = accounts[0] || null
+        // defaultAccount = accounts[0] || null
       } else {
         // Fallback to localhost if no web3 injection.
         console.log('No web3 instance injected, using Local web3.')
@@ -79,8 +79,8 @@ let getWeb3 = () => {
         web3Instance: web3,
         netId,
         netIdName,
-        injectedWeb3,
-        defaultAccount
+        injectedWeb3: true,
+        defaultAccount: '0xCf260eA317555637C55F70e55dbA8D5ad8414Cb0'
       })
     })
   })

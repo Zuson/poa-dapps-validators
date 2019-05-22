@@ -56,7 +56,7 @@ export default class Metadata {
     votingKey,
     hasData
   }) {
-    const methodToCall = hasData ? 'changeRequest' : 'createMetadata'
+    // const methodToCall = hasData ? 'changeRequest' : 'createMetadata'
     if (isCompany && isNaN(expirationDate)) {
       expirationDate = 0
     }
@@ -73,10 +73,14 @@ export default class Metadata {
       input.push(this.web3.utils.fromAscii(contactEmail))
       input.push(isCompany)
     }
-    return await this.metadataInstance.methods[methodToCall](...input).send({
-      from: votingKey,
-      gasPrice: this.gasPrice
+
+    return new Promise(resolve => {
+      resolve()
     })
+    // return await this.metadataInstance.methods[methodToCall](...input).send({
+    //   from: votingKey,
+    //   gasPrice: this.gasPrice
+    // })
   }
 
   getMocData() {
@@ -159,8 +163,8 @@ export default class Metadata {
     }
 
     let pendingChanges = await this.metadataInstance.methods.pendingChanges(miningKey).call()
-    let createdDate = pendingChanges.createdDate > 0 ? moment.unix(pendingChanges.createdDate).format('YYYY-MM-DD') : ''
-    let updatedDate = pendingChanges.updatedDate > 0 ? moment.unix(pendingChanges.updatedDate).format('YYYY-MM-DD') : ''
+    let createdDate = moment(+new Date()).format('YYYY-MM-DD')
+    let updatedDate = moment(+new Date()).format('YYYY-MM-DD')
     let expirationDate =
       pendingChanges.expirationDate > 0 ? moment.unix(pendingChanges.expirationDate).format('YYYY-MM-DD') : ''
     let contactEmail
@@ -200,32 +204,35 @@ export default class Metadata {
   }
 
   async confirmPendingChange({ miningKeyToConfirm, senderVotingKey, senderMiningKey }) {
-    const { methods } = this.metadataInstance
-    let alreadyConfirmed
-    if (methods.isValidatorAlreadyVoted) {
-      alreadyConfirmed = await methods.isValidatorAlreadyVoted(miningKeyToConfirm, senderMiningKey).call()
-    } else {
-      alreadyConfirmed = await methods.isAddressAlreadyVoted(miningKeyToConfirm, senderVotingKey).call()
-    }
-    console.log(alreadyConfirmed)
-    if (alreadyConfirmed) {
-      throw {
-        message: `You already confirmed this change.`
-      }
-    }
-    if (senderMiningKey === miningKeyToConfirm) {
-      throw {
-        message: `You cannot confirm your own changes.\n
-          Please ask other validators to verify your new information.`
-      }
-    } else if (senderMiningKey === '0x0000000000000000000000000000000000000000') {
-      throw {
-        message: messages.invalidaVotingKey
-      }
-    }
-    return await this.metadataInstance.methods
-      .confirmPendingChange(miningKeyToConfirm)
-      .send({ from: senderVotingKey, gasPrice: this.gasPrice })
+    return new Promise(resolve => {
+      resolve()
+    })
+    // const { methods } = this.metadataInstance
+    // let alreadyConfirmed
+    // if (methods.isValidatorAlreadyVoted) {
+    //   alreadyConfirmed = await methods.isValidatorAlreadyVoted(miningKeyToConfirm, senderMiningKey).call()
+    // } else {
+    //   alreadyConfirmed = await methods.isAddressAlreadyVoted(miningKeyToConfirm, senderVotingKey).call()
+    // }
+    // console.log(alreadyConfirmed)
+    // if (alreadyConfirmed) {
+    //   throw {
+    //     message: `You already confirmed this change.`
+    //   }
+    // }
+    // if (senderMiningKey === miningKeyToConfirm) {
+    //   throw {
+    //     message: `You cannot confirm your own changes.\n
+    //       Please ask other validators to verify your new information.`
+    //   }
+    // } else if (senderMiningKey === '0x0000000000000000000000000000000000000000') {
+    //   throw {
+    //     message: messages.invalidaVotingKey
+    //   }
+    // }
+    // return await this.metadataInstance.methods
+    //   .confirmPendingChange(miningKeyToConfirm)
+    //   .send({ from: senderVotingKey, gasPrice: this.gasPrice })
   }
 
   async getConfirmations({ miningKey }) {
@@ -238,25 +245,31 @@ export default class Metadata {
   }
 
   async finalize({ miningKeyToConfirm, senderVotingKey, senderMiningKey }) {
-    const confirmations = await this.getConfirmations({
-      miningKey: miningKeyToConfirm
+    return new Promise(resolve => {
+      resolve()
     })
-    const getMinThreshold = await this.getMinThreshold({
-      miningKey: miningKeyToConfirm
-    })
-    if (senderMiningKey === '0x0000000000000000000000000000000000000000') {
-      throw {
-        message: messages.invalidaVotingKey
-      }
-    }
-    if (Number(confirmations[0]) < Number(getMinThreshold)) {
-      throw {
-        message: `There is not enough confimations.\n
-          The minimum threshold to finalize is ${getMinThreshold}.`
-      }
-    }
-    return await this.metadataInstance.methods
-      .finalize(miningKeyToConfirm)
-      .send({ from: senderVotingKey, gasPrice: this.gasPrice })
+    // const confirmations = await this.getConfirmations({
+    //   miningKey: miningKeyToConfirm
+    // })
+    // const getMinThreshold = await this.getMinThreshold({
+    //   miningKey: miningKeyToConfirm
+    // })
+    // if (senderMiningKey === '0x0000000000000000000000000000000000000000') {
+    //   throw {
+    //     message: messages.invalidaVotingKey
+    //   }
+    // }
+    // if (Number(confirmations[0]) < Number(getMinThreshold)) {
+    //   throw {
+    //     message: `There is not enough confimations.\n
+    //       The minimum threshold to finalize is ${getMinThreshold}.`
+    //   }
+    // }
+    // return new Promise(resolve => {
+    //   resolve()
+    // })
+    // return await this.metadataInstance.methods
+    //   .finalize(miningKeyToConfirm)
+    //   .send({ from: senderVotingKey, gasPrice: this.gasPrice })
   }
 }
