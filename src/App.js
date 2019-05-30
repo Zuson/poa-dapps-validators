@@ -16,6 +16,10 @@ import { messages } from './utils/messages'
 
 import './assets/stylesheets/index.css'
 
+// translation files
+import zh from './local/zh'
+import en from './local/en'
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -23,6 +27,7 @@ class App extends Component {
     this.checkValidation = this.checkValidation.bind(this)
     this.onClick = this.onClick.bind(this)
     this.onChangeFormField = this.onChangeFormField.bind(this)
+    this.onChangeLanguage = this.onChangeLanguage.bind(this)
     this.getKeysManager = this.getKeysManager.bind(this)
     this.getMetadataContract = this.getMetadataContract.bind(this)
     this.getVotingKey = this.getVotingKey.bind(this)
@@ -45,7 +50,24 @@ class App extends Component {
         contactEmail: '',
         isCompany: helpers.isCompanyAllowed(Number(this.props.web3Config.netId))
       },
-      hasData: false
+      hasData: false,
+      language: {
+        text: 'en',
+        lists: [
+          {
+            value: '简体中文',
+            name: 'zh',
+            isSelect: false,
+            source: zh
+          },
+          {
+            value: 'English',
+            name: 'en',
+            isSelect: true,
+            source: en
+          }
+        ]
+      }
     }
     this.defaultValues = null
     this.setMetadata.call(this)
@@ -241,6 +263,21 @@ class App extends Component {
     this.setState({ form })
   }
 
+  // 切换翻译文字
+  onChangeLanguage(event) {
+    let language = this.state.language
+    language.text = event.target.value
+    language.lists.forEach(element => {
+      if (event.target.value === element.name) {
+        element.isSelect = true
+      } else {
+        element.isSelect = false
+      }
+    })
+
+    this.setState({ language })
+  }
+
   render() {
     const netId = Number(this.props.web3Config.netId)
     const { isCompany } = this.state.form
@@ -257,6 +294,8 @@ class App extends Component {
         <strong>{formattedSuggestion.mainText}</strong> <small>{formattedSuggestion.secondaryText}</small>
       </div>
     )
+    let name = this.state.language.text
+    let local = require(`./local/${name}`)
 
     if (this.state.loading) {
       return ReactDOM.createPortal(
@@ -265,9 +304,17 @@ class App extends Component {
       )
     }
 
+    console.log(this.state.language.lists)
+
     return this.isValidVotingKey ? (
       <div className="vld-App">
-        <MainTitle text={constants.navigationData[1].title} />
+        {/* <MainTitle text={constants.navigationData[1].title} /> */}
+        <MainTitle
+          text={local.default.main.title}
+          languageText={this.state.language.text}
+          languageArray={this.state.language.lists}
+          onChange={this.onChangeLanguage}
+        />
         {isCompanyAllowed ? (
           <div className="vld-App_RadioButtons">
             <FormRadioButton
@@ -292,14 +339,16 @@ class App extends Component {
           <FormInput
             id="firstName"
             onChange={this.onChangeFormField}
-            title={isCompany ? 'Full name' : 'First name'}
+            // title={isCompany ? 'Full name' : 'First name'}
+            title={isCompany ? 'Full name' : local.default.form.firstName}
             value={this.state.form.firstName}
           />
           {isCompany ? (
             <FormInput
               id="contactEmail"
               onChange={this.onChangeFormField}
-              title="Contact E-mail"
+              // title="Contact E-mail"
+              title={local.default.form.contactEmail}
               type="email"
               value={this.state.form.contactEmail}
             />
@@ -308,7 +357,8 @@ class App extends Component {
             <FormInput
               id="lastName"
               onChange={this.onChangeFormField}
-              title="Last name"
+              // title="Last name"
+              title={local.default.form.lastName}
               value={this.state.form.lastName}
             />
           )}
@@ -316,7 +366,8 @@ class App extends Component {
             <FormInput
               id="licenseId"
               onChange={this.onChangeFormField}
-              title="License id"
+              // title="License id"
+              title={local.default.form.licenseId}
               value={this.state.form.licenseId}
             />
           )}
@@ -324,7 +375,8 @@ class App extends Component {
             <FormInput
               id="expirationDate"
               onChange={this.onChangeFormField}
-              title="License expiration"
+              // title="License expiration"
+              title={local.default.form.licenseExpiration}
               type="date"
               value={this.state.form.expirationDate}
             />
@@ -335,27 +387,45 @@ class App extends Component {
               id="address"
               inputProps={inputProps}
               onSelect={this.onSelect}
-              title="Address"
+              // title="Address"
+              title={local.default.form.address}
             />
           )}
           {isCompany ? null : (
-            <FormInput id="us_state" onChange={this.onChangeFormField} title="State" value={this.state.form.us_state} />
+            <FormInput
+              id="us_state"
+              onChange={this.onChangeFormField}
+              // title="State"
+              title={local.default.form.state}
+              value={this.state.form.us_state}
+            />
           )}
           {isCompany ? null : (
             <FormInput
               id="postal_code"
               onChange={this.onChangeFormField}
-              title="Zip code"
+              // title="Zip code"
+              title={local.default.form.zipCode}
               value={this.state.form.postal_code}
             />
           )}
         </form>
         <ButtonConfirm
           networkBranch={networkBranch}
-          text={` ${this.state.hasData ? 'Update' : 'Set'} Metadata`}
+          // text={`${this.state.hasData ? 'Update' : 'Set'} Metadata`}
+          text={`${this.state.hasData ? local.default.button.update : local.default.button.set} ${
+            local.default.button.metadata
+          }`}
           onClick={this.onClick}
         />
-        {hideNote ? null : <CreateKeysAddressNote networkBranch={networkBranch} />}
+        {hideNote ? null : (
+          <CreateKeysAddressNote
+            networkBranch={networkBranch}
+            firstPart={local.default.note.firstPart}
+            secondPart={local.default.note.secondPart}
+            thirdlyPart={local.default.note.thirdlyPart}
+          />
+        )}
       </div>
     ) : (
       <div className="vld-App">
